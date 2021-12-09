@@ -5,7 +5,6 @@ import { Message } from 'discord.js';
 export class PlayerManager {
   private player: AudioPlayer | null = null;
   private connection: VoiceConnection | null = null;
-  private point = {};
 
   get() {
     return this.player;

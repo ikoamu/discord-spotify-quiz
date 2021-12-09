@@ -1,4 +1,5 @@
 import { MessageEmbed } from "discord.js";
+import { Answerer } from "../managers/AnswerersManager";
 
 export type Track = {
   id: string;
@@ -29,8 +30,8 @@ export const createAnswerEmbed = (
     .setTitle((
       !!username && type !== "timeup" ? `${username}` : ""
     ) + (
-        type === "correct" ? "🙆‍♂️ Correct"
-          : type === "incorrect" ? "👎 Incorrect" : "⏰ Timeup")
+        type === "correct" ? " 🙆‍♂️ Correct"
+          : type === "incorrect" ? " 👎 Incorrect" : "⏰ Timeup")
     )
     .setColor(type === "correct" ? "GREEN" : "RED")
     .setThumbnail(answerTrack.album.images[0].url)
@@ -44,9 +45,18 @@ export const createAnswerEmbed = (
     .setDescription(answerTrack.artists[0].name);
 }
 
-export const createQuizResult = (quizCount: number, correctCount: number) => {
-  return new MessageEmbed()
+export const createQuizResult = (quizCount: number, correctCount: number, answerers: Answerer[]) => {
+  const embed = new MessageEmbed()
     .setTitle("Result")
     .setColor("ORANGE")
     .setDescription(`${correctCount} correct answers out of ${quizCount} questions.`);
+  answerers.forEach((ansr, index) => {
+    const prefix = index === 0 ? "🏆 " : "";
+    embed.addFields([{
+      name: prefix + ansr.displayName,
+      value: `${ansr.correctCount} questions correct, ${ansr.incorrectCount} questions incorrect`,
+    }]);
+  });
+
+  return embed;
 }

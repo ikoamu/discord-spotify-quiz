@@ -1,10 +1,10 @@
-import { Client, Message, MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
-import { PlayerManager } from "./PlayerManager";
-import { choiceOtherTracks, createAnswerEmbed, createQuizResult, shuffleTracks } from "../quiz";
-import { SpotifyApiManager } from './SpotifyApiManager'
+import { Message, MessageEmbed } from "discord.js";
+import { choiceOtherTracks, createAnswerEmbed, createQuizResult, shuffleTracks } from "../utils/quiz";
+import { PlayerManager, AnswerersManager, SpotifyApiManager } from "../managers";
 
 export class QuizManager {
   private spotifyApi = new SpotifyApiManager();
+  private answerersManager = new AnswerersManager();
 
   private allTracks: SpotifyApi.TrackObjectSimplified[] = [];
   private answers: SpotifyApi.TrackObjectSimplified[] = [];
@@ -15,29 +15,39 @@ export class QuizManager {
   private cachedMessage: Message | null = null;
   private cachedPlaylistId: string | null = null;
 
+  private started = false;
+
+  isStarted() {
+    return this.started;
+  };
+
+  start() {
+    this.started = true;
+  };
+
   getPlaylist() {
     return this.cachedPlaylistId;
-  }
+  };
 
   getMessage() {
     return this.cachedMessage;
-  }
+  };
 
   saveMessage(message: Message) {
     this.cachedMessage = message;
-  }
+  };
 
   clearMessage() {
     this.cachedMessage = null;
-  }
+  };
 
   savePlaylistId(playlistId: string) {
     this.cachedPlaylistId = playlistId;
-  }
+  };
 
   clearPlaylistId() {
     this.cachedPlaylistId = null;
-  }
+  };
 
   isQuizExist() {
     return !!this.answers.length;
@@ -45,21 +55,21 @@ export class QuizManager {
 
   setAllTracks(tracks: SpotifyApi.TrackObjectSimplified[]) {
     this.allTracks = tracks;
-  }
+  };
 
   setAnswers(count: number) {
     if (!this.allTracks.length) return;
 
     const answerLength = this.allTracks.length < count ? this.allTracks.length : count;
     this.answers = shuffleTracks(this.allTracks.filter(t => !!t.preview_url)).slice(0, answerLength);
-  }
+  };
 
   startQuiz(message: Message) {
     if (!this.answers.length) {
       message.channel.send("quiz is ended.");
       return;
     }
-  }
+  };
 
   async sendQuiz(message: Message, artistName: string, playerManager: PlayerManager) {
     if (!this.answers.length) {
@@ -113,10 +123,9 @@ export class QuizManager {
         const member = guild?.members.cache.get(user!.id);
 
         const isCorrect = quiz[selectedIndex].id === answer.id;
-        if (isCorrect) {
-          this.correctCount++;
-        } else {
-          member?.voice.disconnect();
+        if (isCorrect) this.correctCount++;
+        if (member) {
+          this.answerersManager.setAnswer(member, isCorrect ? "correct" : "incorrect");
         }
 
         const answerEmbed = await message.channel.send({
@@ -144,11 +153,15 @@ export class QuizManager {
     } catch {
       await message.channel.send({ embeds: [createAnswerEmbed(answer, null, "timeup")] });
     }
-  }
+  };
 
   async sendResult(message: Message) {
-    await message.channel.send({ embeds: [createQuizResult(this.quizCount, this.correctCount)] });
-  }
+    console.log(this.answerersManager.getAnswerers())
+    await message.channel.send({
+      embeds: [
+        createQuizResult(this.quizCount, this.correctCount, this.answerersManager.getAnswerers())]
+    });
+  };
 
   clear() {
     this.quizCount = 0;
@@ -157,5 +170,7 @@ export class QuizManager {
     this.answers = [];
     this.cachedPlaylistId = null;
     this.cachedPlaylistId = null;
-  }
+    this.started = false;
+    this.answerersManager.clear();
+  };
 };
