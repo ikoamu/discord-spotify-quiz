@@ -4,3 +4,9 @@ export function chunk<T>(arr: T[], size: number): T[][] {
     [] as T[][]
   )
 };
+
+export const omitText = (text: string, maxLength: number, ellipsis: string = "...") => {
+  return text.length >= maxLength
+    ? text.slice(0, maxLength - ellipsis.length) + ellipsis
+    : text
+}

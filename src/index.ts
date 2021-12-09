@@ -3,7 +3,7 @@ import { config } from 'dotenv';
 import { PlayerManager } from './PlayerManager';
 import { SpotifyApi } from './SpotifyApi'
 import { QuizManager } from './QuizManager';
-import { chunk } from "./utils";
+import { chunk, omitText } from "./utils";
 
 config();
 const token = process.env.DISCORD_TOKEN;
@@ -167,7 +167,7 @@ const questionsMax = 100;
                     new MessageButton()
                       .setCustomId(r.id)
                       .setStyle("SECONDARY")
-                      .setLabel(`${r.name} (${r.tracks.total} songs)`)
+                      .setLabel(`${omitText(r.name, 30)} (${r.tracks.total} songs)`)
                   )
               })]
             });
