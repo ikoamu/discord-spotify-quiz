@@ -12,31 +12,56 @@ export class QuizManager {
   private quizCount = 0;
   private correctCount = 0;
 
-  private prevIncorrectUserId = "";
+  private cachedMessage: Message | null = null;
+  private cachedPlaylistId: string | null = null;
 
-  public isQuizExist = () => {
+  getPlaylist() {
+    return this.cachedPlaylistId;
+  }
+
+  getMessage() {
+    return this.cachedMessage;
+  }
+
+  saveMessage(message: Message) {
+    this.cachedMessage = message;
+  }
+
+  clearMessage() {
+    this.cachedMessage = null;
+  }
+
+  savePlaylistId(playlistId: string) {
+    this.cachedPlaylistId = playlistId;
+  }
+
+  clearPlaylistId() {
+    this.cachedPlaylistId = null;
+  }
+
+  isQuizExist() {
     return !!this.answers.length;
   };
 
-  public setAllTracks(tracks: SpotifyApi.TrackObjectSimplified[]) {
+  setAllTracks(tracks: SpotifyApi.TrackObjectSimplified[]) {
     this.allTracks = tracks;
   }
 
-  public setAnswers(count: number) {
+  setAnswers(count: number) {
     if (!this.allTracks.length) return;
 
     const answerLength = this.allTracks.length < count ? this.allTracks.length : count;
     this.answers = shuffleTracks(this.allTracks.filter(t => !!t.preview_url)).slice(0, answerLength);
   }
 
-  public startQuiz(message: Message) {
+  startQuiz(message: Message) {
     if (!this.answers.length) {
       message.channel.send("quiz is ended.");
       return;
     }
   }
 
-  public async sendQuiz(message: Message, artistName: string, playerManager: PlayerManager) {
+  async sendQuiz(message: Message, artistName: string, playerManager: PlayerManager) {
     if (!this.answers.length) {
       return;
     }
@@ -71,7 +96,7 @@ export class QuizManager {
             '2️⃣',
             '3️⃣',
             '4️⃣',
-          ].includes(reaction.emoji.name || "") && !user.bot && user.id !== this.prevIncorrectUserId;
+          ].includes(reaction.emoji.name || "") && !user.bot
         },
         max: 1,
         time: 33000,
@@ -90,9 +115,7 @@ export class QuizManager {
         const isCorrect = quiz[selectedIndex].id === answer.id;
         if (isCorrect) {
           this.correctCount++;
-          this.prevIncorrectUserId = "";
         } else {
-          this.prevIncorrectUserId = member?.id || "";
           member?.voice.disconnect();
         }
 
@@ -110,27 +133,29 @@ export class QuizManager {
         const nextCommand = await answerEmbed.awaitReactions({
           max: 1,
           time: 20000,
+          filter: (reaction, user) => {
+            return reaction.emoji.name === "✅" && !user.bot
+          }
         });
         if (nextCommand) {
-          const reaction = collected.first();
           playerManager.stop();
         }
       }
     } catch {
-      this.prevIncorrectUserId = "";
       await message.channel.send({ embeds: [createAnswerEmbed(answer, null, "timeup")] });
     }
   }
 
-  public async sendResult(message: Message) {
+  async sendResult(message: Message) {
     await message.channel.send({ embeds: [createQuizResult(this.quizCount, this.correctCount)] });
   }
 
-  public clear() {
+  clear() {
     this.quizCount = 0;
     this.correctCount = 0;
-
     this.allTracks = [];
     this.answers = [];
+    this.cachedPlaylistId = null;
+    this.cachedPlaylistId = null;
   }
 };

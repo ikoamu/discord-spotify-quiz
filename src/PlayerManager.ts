@@ -16,7 +16,8 @@ export class PlayerManager {
   }
 
   join(message: Message) {
-    if (!!this.player && !!this.connection) return;
+    // already in.
+    if (!!this.player && !!this.connection) return true;
 
     const channel = message.member?.voice.channel;
     if (!channel) {
