@@ -10,7 +10,6 @@ export const shuffleTracks = (tracks: SpotifyApi.TrackObjectSimplified[]) => {
   return tracks.sort(() => Math.random() - 0.5);
 };
 
-
 export const choiceOtherTracks = (
   answerTrack: SpotifyApi.TrackObjectSimplified,
   allTracks: SpotifyApi.TrackObjectSimplified[],
