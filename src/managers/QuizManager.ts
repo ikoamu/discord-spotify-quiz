@@ -1,10 +1,10 @@
 import { Client, Message, MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
 import { PlayerManager } from "./PlayerManager";
-import { choiceOtherTracks, createAnswerEmbed, createQuizResult, shuffleTracks } from "./quiz";
-import { SpotifyApi } from './SpotifyApi'
+import { choiceOtherTracks, createAnswerEmbed, createQuizResult, shuffleTracks } from "../quiz";
+import { SpotifyApiManager } from './SpotifyApiManager'
 
 export class QuizManager {
-  private spotifyApi = new SpotifyApi();
+  private spotifyApi = new SpotifyApiManager();
 
   private allTracks: SpotifyApi.TrackObjectSimplified[] = [];
   private answers: SpotifyApi.TrackObjectSimplified[] = [];

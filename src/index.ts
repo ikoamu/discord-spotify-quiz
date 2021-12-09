@@ -1,8 +1,8 @@
 import { Client, Intents, Message, MessageActionRow, MessageButton, MessageEmbed, TextChannel, User } from 'discord.js';
 import { config } from 'dotenv';
-import { PlayerManager } from './PlayerManager';
-import { SpotifyApi } from './SpotifyApi'
-import { QuizManager } from './QuizManager';
+import { SpotifyApiManager } from './managers/SpotifyApiManager'
+import { QuizManager } from './managers/QuizManager';
+import { PlayerManager } from './managers/PlayerManager';
 import { chunk, omitText } from "./utils";
 
 config();
@@ -21,7 +21,7 @@ const questionsDefault = 1;
   });
 
   const playerManager = new PlayerManager();
-  const spotifyApi = new SpotifyApi();
+  const spotifyApi = new SpotifyApiManager();
   const quizManager = new QuizManager();
 
   client.on("messageCreate", async (message) => {

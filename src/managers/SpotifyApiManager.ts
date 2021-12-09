@@ -7,7 +7,7 @@ const clientId = process.env.SPOTIFY_CLIENT_ID;
 const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 const auth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
 
-export class SpotifyApi {
+export class SpotifyApiManager {
   private api = new SpotifyWebApi();
 
   private setToken = async () => {
