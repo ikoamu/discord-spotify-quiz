@@ -30,7 +30,7 @@ export const search = async (
                 new MessageButton()
                   .setCustomId(r.id)
                   .setStyle("SECONDARY")
-                  .setLabel(`${omitText(r.name, ` (${r.tracks.total} songs)`, 80)} (${r.tracks.total} songs)`)
+                  .setLabel(`${omitText(r.name, ` (${r.tracks.total} songs)`, 80)}`)
               )
           })]
         });
