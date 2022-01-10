@@ -44,7 +44,7 @@ export class PlayerManager {
   play(url?: string | null | undefined) {
     if (!url) return;
     const resource = createAudioResource(url, { inlineVolume: true });
-    resource.volume?.setVolume(0.01);
+    resource.volume?.setVolume(0.05);
     this.player?.play(resource);
   }
 
