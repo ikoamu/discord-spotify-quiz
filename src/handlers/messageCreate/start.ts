@@ -1,10 +1,13 @@
 import { Message } from "discord.js";
+import { prefix } from "../../config";
 import { PlayerManager, QuizManager, SpotifyApiManager } from "../../managers";
 
 const questionsDefault = 1;
 
+const command = `${prefix}start `;
+
 export const isStart = (message: Message) => {
-  return message.content.startsWith("?start ");
+  return message.content.startsWith(command);
 }
 
 export const start = async (
@@ -13,7 +16,7 @@ export const start = async (
   quizManager: QuizManager,
   spotifyApiManager: SpotifyApiManager
 ) => {
-  const questionsNum = Number(message.content.replace("?start ", ""));
+  const questionsNum = Number(message.content.replace(command, ""));
   const questions = isNaN(questionsNum) ? questionsDefault : questionsNum;
 
   const playlistId = quizManager.getPlaylist();
@@ -25,7 +28,7 @@ export const start = async (
   try {
     playlist = await spotifyApiManager.getPlaylist(playlistId);
   } catch (err) {
-    message.channel.send(`\`${playlistId}\` is invalid. use \`?search <keyword>\``);
+    message.channel.send(`\`${playlistId}\` is invalid. use \`${prefix}search <keyword>\``);
   }
   if (!playlist || !playlist.tracks.items.length) {
     message.channel.send(`\`${playlistId}\` is not found.`);
@@ -34,7 +37,7 @@ export const start = async (
 
   message.channel.send(`Start ${playlist.name} Quiz (${questions} questions)`);
   if (!playerManager.isReady()) {
-    message.channel.send("Bot is not ready. use \`?join\`");
+    message.channel.send(`Bot is not ready. use \`${prefix}join\``);
     return;
   }
 

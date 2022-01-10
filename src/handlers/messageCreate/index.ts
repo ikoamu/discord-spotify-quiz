@@ -1,4 +1,5 @@
 import { Awaitable, ClientEvents } from 'discord.js';
+import { prefix } from '../../config';
 import { PlayerManager, QuizManager, SpotifyApiManager } from '../../managers';
 import { search, isSearch } from "./search";
 import { start, isStart } from "./start";
@@ -17,10 +18,10 @@ export const handleOnMessageCreate: (
   ) => async (
     message
   ) => {
-      if (message.content === "?join") {
+      if (message.content === `${prefix}join`) {
         playerManager.join(message);
       }
-      else if (message.content === "?leave") {
+      else if (message.content === `${prefix}leave`) {
         playerManager.leave();
       }
       else if (isSuspend(message)) {

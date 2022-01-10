@@ -76,8 +76,8 @@ export class QuizManager {
       return;
     }
 
-    const answer = await this.spotifyApi.getTrack(this.answers.pop()!.id);
-    const quiz = shuffleTracks([answer, ...choiceOtherTracks(answer, this.allTracks)]);
+    const correctTrack = await this.spotifyApi.getTrack(this.answers.pop()!.id);
+    const quiz = shuffleTracks([correctTrack, ...choiceOtherTracks(correctTrack, this.allTracks)]);
 
     this.quizCount++;
     const question = await message.channel.send({
@@ -96,7 +96,7 @@ export class QuizManager {
     await question.react("3️⃣");
     await question.react("4️⃣");
 
-    playerManager.play(answer.preview_url);
+    playerManager.play(correctTrack.preview_url);
 
     try {
       const collected = await question.awaitReactions({
@@ -122,7 +122,7 @@ export class QuizManager {
         const guild = message.guild;
         const member = guild?.members.cache.get(user!.id);
 
-        const isCorrect = quiz[selectedIndex].id === answer.id;
+        const isCorrect = quiz[selectedIndex].id === correctTrack.id;
         if (isCorrect) this.correctCount++;
         if (member) {
           this.answerersManager.setAnswer(member, isCorrect ? "correct" : "incorrect");
@@ -131,7 +131,7 @@ export class QuizManager {
         const answerEmbed = await message.channel.send({
           embeds: [
             createAnswerEmbed(
-              answer,
+              correctTrack,
               member?.displayName || null,
               isCorrect ? "correct" : "incorrect"
             )
@@ -151,12 +151,11 @@ export class QuizManager {
         }
       }
     } catch {
-      await message.channel.send({ embeds: [createAnswerEmbed(answer, null, "timeup")] });
+      await message.channel.send({ embeds: [createAnswerEmbed(correctTrack, null, "timeup")] });
     }
   };
 
   async sendResult(message: Message) {
-    console.log(this.answerersManager.getAnswerers())
     await message.channel.send({
       embeds: [
         createQuizResult(this.quizCount, this.correctCount, this.answerersManager.getAnswerers())]

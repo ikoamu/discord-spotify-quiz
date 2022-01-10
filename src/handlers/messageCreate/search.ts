@@ -1,9 +1,12 @@
 import { Message, MessageActionRow, MessageButton } from "discord.js";
+import { prefix } from "../../config";
 import { QuizManager, SpotifyApiManager } from "../../managers";
 import { chunk, omitText } from "../../utils/common";
 
+const command = `${prefix}search `;
+
 export const isSearch = (message: Message) => {
-  return message.content.startsWith("?search ");
+  return message.content.startsWith(command);
 }
 
 export const search = async (
@@ -12,7 +15,7 @@ export const search = async (
   spotifyApiManager: SpotifyApiManager
 ) => {
   quizManager.saveMessage(message);
-  const key = message.content.replace("?search ", "");
+  const key = message.content.replace(command, "");
   const result = await spotifyApiManager.searchPlaylist(key);
 
   if (!!result && result.length) {

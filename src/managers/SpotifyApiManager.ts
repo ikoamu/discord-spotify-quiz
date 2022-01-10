@@ -1,10 +1,7 @@
 import SpotifyWebApi from 'spotify-web-api-node';
 import fetch from "node-fetch";
-import { config } from 'dotenv';
+import { clientId, clientSecret } from '../config';
 
-config();
-const clientId = process.env.SPOTIFY_CLIENT_ID;
-const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 const auth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
 
 export class SpotifyApiManager {

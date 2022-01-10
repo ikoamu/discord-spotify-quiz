@@ -1,4 +1,5 @@
 import { Awaitable, ClientEvents } from 'discord.js';
+import { prefix } from '../../config';
 import { PlayerManager, QuizManager } from "../../managers";
 
 export const handleOnInteractionCreate: (
@@ -9,7 +10,7 @@ export const handleOnInteractionCreate: (
     if (interaction.isButton()) {
       if (quizManager.isStarted()) {
         return await interaction.reply({
-          content: "‼ Quiz is already underway. \n If you want to hold a new quiz, please suspend the current quiz with \`?suspend\`.",
+          content: `‼ Quiz is already underway. \n If you want to hold a new quiz, please suspend the current quiz with \`${prefix}suspend\`.`,
           ephemeral: false
         });
       }
@@ -19,7 +20,7 @@ export const handleOnInteractionCreate: (
         quizManager.savePlaylistId(interaction.customId);
         if (playerManager.join(message)) {
           await interaction.reply({
-            content: "👉 Please specify the number of questions and start the quiz. \n \`?start <questions>\`",
+            content: `👉 Please specify the number of questions and start the quiz. \n \`${prefix}start <questions>\``,
             ephemeral: false
           });
         };
