@@ -1,8 +1,9 @@
 import { Message } from "discord.js";
+import { prefix } from "../../config";
 import { PlayerManager, QuizManager } from "../../managers";
 
 export const isSuspend = (message: Message) => {
-  return message.content === "?suspend";
+  return message.content === `${prefix}suspend`;
 }
 
 export const suspend = async (

@@ -1,10 +1,7 @@
 import { Client, Intents } from 'discord.js';
-import { config } from 'dotenv';
 import { QuizManager, PlayerManager, SpotifyApiManager } from './managers';
 import { handleOnInteractionCreate, handleOnMessageCreate } from "./handlers";
-config();
-
-const token = process.env.DISCORD_TOKEN;
+import { prefix, token } from './config';
 
 (async function main() {
   const client = new Client({
@@ -30,7 +27,7 @@ const token = process.env.DISCORD_TOKEN;
   );
 
   client.on('ready', () => {
-    client.user?.setActivity("Let's start the quiz with \"?search [keyword]\"");
+    client.user?.setActivity(`Let's start the quiz with \"${prefix}search [keyword]\"`);
   });
   client.login(token);
 })();
