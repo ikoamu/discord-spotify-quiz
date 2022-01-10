@@ -54,7 +54,7 @@ export const createQuizResult = (quizCount: number, correctCount: number, answer
     const prefix = index === 0 ? "🏆 " : "";
     embed.addFields([{
       name: prefix + ansr.displayName,
-      value: `${ansr.correctCount} questions correct, ${ansr.incorrectCount} questions incorrect`,
+      value: `⭕: ${ansr.correctCount} / ❌: ${ansr.incorrectCount}`,
     }]);
   });
 
