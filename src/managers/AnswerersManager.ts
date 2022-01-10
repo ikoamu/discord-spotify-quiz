@@ -27,34 +27,39 @@ export class AnswerersManager {
     }
   };
 
-
   correct(member: GuildMember) {
     const index = this.answerers.findIndex(a => a.id === member.id);
     if (index > -1) {
-      const tmp = this.answerers[index];
-      this.answerers[index] = {
-        ...tmp,
-        correctCount: tmp.correctCount++,
-      }
+      const prev = this.answerers[index];
+      const nextData: Answerer = {
+        id: prev.id,
+        displayName: prev.displayName,
+        correctCount: prev.correctCount + 1,
+        incorrectCount: prev.incorrectCount,
+      };
+      this.answerers[index] = nextData;
     } else {
-      this.setMember(member, 1, 0);
+      this.setNewMember(member, 1, 0);
     }
   }
 
   incorrect(member: GuildMember) {
     const index = this.answerers.findIndex(a => a.id === member.id);
     if (index > -1) {
-      const tmp = this.answerers[index];
-      this.answerers[index] = {
-        ...tmp,
-        incorrectCount: tmp.incorrectCount++,
-      }
+      const prev = this.answerers[index];
+      const nextData: Answerer = {
+        id: prev.id,
+        displayName: prev.displayName,
+        correctCount: prev.correctCount,
+        incorrectCount: prev.incorrectCount + 1,
+      };
+      this.answerers[index] = nextData;
     } else {
-      this.setMember(member, 0, 1);
+      this.setNewMember(member, 0, 1);
     }
   }
 
-  setMember(
+  setNewMember(
     member: GuildMember,
     correctCount: number = 0,
     incorrectCount: number = 0,
