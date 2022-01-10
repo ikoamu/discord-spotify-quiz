@@ -1,7 +1,7 @@
 import { Client, Intents } from 'discord.js';
-import { QuizManager, PlayerManager, SpotifyApiManager } from './managers';
 import { handleOnInteractionCreate, handleOnMessageCreate } from "./handlers";
 import { prefix, token } from './config';
+import { GuildsManager } from './managers/GuildsManager';
 
 (async function main() {
   const client = new Client({
@@ -13,17 +13,46 @@ import { prefix, token } from './config';
     ]
   });
 
-  const playerManager = new PlayerManager();
-  const spotifyApiManager = new SpotifyApiManager();
-  const quizManager = new QuizManager();
+  const guildsManager = new GuildsManager();
 
   client.on(
     "messageCreate",
-    handleOnMessageCreate(playerManager, quizManager, spotifyApiManager)
+    (message) => {
+      const guildId = message.guildId;
+      if (guildId) {
+        if (!guildsManager.isExists(guildId)) {
+          guildsManager.set(guildId);
+        }
+
+        const managers = guildsManager.get(guildId);
+        if (managers) {
+          handleOnMessageCreate(
+            managers.playerManager,
+            managers.quizManager,
+            managers.spotifyApiManager
+          )(message);
+        }
+      }
+    }
   );
   client.on(
     "interactionCreate",
-    handleOnInteractionCreate(playerManager, quizManager)
+    (interaction) => {
+      const guildId = interaction.guildId;
+      if (guildId) {
+        if (!guildsManager.isExists(guildId)) {
+          guildsManager.set(guildId);
+        }
+
+        const managers = guildsManager.get(guildId);
+        if (managers) {
+          handleOnInteractionCreate(
+            managers.playerManager,
+            managers.quizManager
+          )(interaction);
+        }
+      }
+    }
   );
 
   client.on('ready', () => {
