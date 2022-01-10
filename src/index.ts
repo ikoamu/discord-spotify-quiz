@@ -30,7 +30,7 @@ const token = process.env.DISCORD_TOKEN;
   );
 
   client.on('ready', () => {
-    console.log("on ready");
+    client.user?.setActivity("Let's start the quiz with \"?search [keyword]\"");
   });
   client.login(token);
 })();
